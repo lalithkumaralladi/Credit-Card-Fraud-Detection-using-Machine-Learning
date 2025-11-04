@@ -1,0 +1,46 @@
+services:
+  # Web Service
+  - type: web
+    name: credit-card-fraud-detection
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT --workers 2
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PYTHONUNBUFFERED
+        value: '1'
+      - key: PYTHONDONTWRITEBYTECODE
+        value: '1'
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: 'False'
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 8000
+      - key: WORKERS
+        value: 2
+      - key: LOG_LEVEL
+        value: info
+      - key: MAX_FILE_SIZE_MB
+        value: 500
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENABLE_COMPRESSION
+        value: True
+      - key: CACHE_STATIC_FILES
+        value: True
+      - key: TIMEOUT_KEEP_ALIVE
+        value: 30
+      - key: LIMIT_CONCURRENCY
+        value: 1000
+      - key: LIMIT_MAX_REQUESTS
+        value: 10000

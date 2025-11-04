@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Project specific
+.env
+*.log
+logs/
+test_*.py
+*_test.py
+simple_*.py
+
+# Data files
+*.csv
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.model
+*.db
+*.sqlite
+
+# Directories
+frontend/uploads/*
+!frontend/uploads/.gitkeep
+frontend/static/img/*
+models/*
+!models/.gitkeep
+test_data/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
