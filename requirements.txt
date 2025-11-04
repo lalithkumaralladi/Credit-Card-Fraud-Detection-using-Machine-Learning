@@ -1,0 +1,21 @@
+# Core dependencies
+fastapi>=0.104.1,<1.0.0
+uvicorn[standard]>=0.24.0,<1.0.0
+pandas>=2.1.2,<3.0.0
+numpy>=1.26.1,<2.0.0
+scikit-learn>=1.3.2,<2.0.0
+imbalanced-learn>=0.11.0,<1.0.0
+python-multipart>=0.0.6,<1.0.0
+jinja2>=3.1.2,<4.0.0
+aiofiles>=23.2.1,<24.0.0
+joblib>=1.3.2,<2.0.0
+matplotlib>=3.8.2,<4.0.0
+seaborn>=0.13.0,<1.0.0
+
+# Performance optimizations
+pyarrow>=14.0.0,<15.0.0  # For faster parquet operations
+pydantic>=2.0.0,<3.0.0  # For better request/response models
+orjson>=3.9.0,<4.0.0    # Faster JSON serialization
+uvloop>=0.19.0,<1.0.0    # Faster event loop for asyncio
+httptools>=0.6.0,<1.0.0  # Faster HTTP parsing
+python-dotenv>=1.0.0,<2.0.0  # For environment variables
