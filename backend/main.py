@@ -6,6 +6,7 @@ for the Credit Card Fraud Detection system.
 """
 
 import os
+import sys
 import json
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
@@ -19,6 +20,9 @@ from typing import Dict, Any, Optional
 import joblib
 import uuid
 from datetime import datetime
+
+# Add parent directory to path for config import
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import configuration
 from config import settings
