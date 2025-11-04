@@ -20,24 +20,28 @@ import joblib
 import uuid
 from datetime import datetime
 
+# Import configuration
+from config import settings
+
 # Import local modules
 from backend.models.fraud_detector import FraudDetector
 from backend.services.data_processor import DataProcessor
 from backend.services.graph_generator import GraphGenerator
 
 # Initialize FastAPI app
-app = FastAPI(title="Credit Card Fraud Detection API")
+app = FastAPI(
+    title=settings.APP_NAME,
+    debug=settings.DEBUG,
+    version="1.0.0"
+)
 
-# Setup paths
-BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATES_DIR = os.path.join(BASE_DIR, "frontend", "templates")
-STATIC_DIR = os.path.join(BASE_DIR, "frontend", "static")
-UPLOAD_DIR = os.path.join(BASE_DIR, "frontend", "uploads")
-MODEL_DIR = os.path.join(BASE_DIR, "models", "saved_models")
+# Use paths from settings
+TEMPLATES_DIR = settings.TEMPLATES_DIR
+STATIC_DIR = settings.STATIC_DIR
+UPLOAD_DIR = settings.UPLOAD_DIR
+MODEL_DIR = settings.MODEL_DIR
 
-# Create necessary directories
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(MODEL_DIR, exist_ok=True)
+# Directories are created in config.py
 
 # Mount static files
 app.mount(
@@ -53,8 +57,8 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 current_model: Optional[FraudDetector] = None
 current_processor: Optional[DataProcessor] = None
 
-# Increase file size limit to 500MB
-MAX_FILE_SIZE = 500 * 1024 * 1024  # 500MB
+# File size limit from settings
+MAX_FILE_SIZE = settings.MAX_FILE_SIZE
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -99,7 +103,7 @@ async def upload_file(file: UploadFile = File(...)):
             raise HTTPException(status_code=400, detail=f"Feature scaling error: {str(e)}")
         
         # Handle class imbalance (optimized for large datasets)
-        if len(X_train_scaled) > 50000:
+        if settings.SAMPLE_LARGE_DATASETS and len(X_train_scaled) > settings.LARGE_DATASET_THRESHOLD:
             # Sample for faster processing on very large datasets
             sample_size = min(50000, len(X_train_scaled))
             if isinstance(X_train_scaled, pd.DataFrame):
@@ -112,10 +116,10 @@ async def upload_file(file: UploadFile = File(...)):
                 y_train = y_train[indices]
         
         # Skip SMOTE for very large datasets to save time
-        if len(X_train_scaled) > 100000:
-            X_resampled, y_resampled = X_train_scaled, y_train
-        else:
+        if settings.ENABLE_SMOTE and len(X_train_scaled) <= settings.MAX_SMOTE_SAMPLES:
             X_resampled, y_resampled = processor.handle_class_imbalance(X_train_scaled, y_train)
+        else:
+            X_resampled, y_resampled = X_train_scaled, y_train
         
         # Train the model
         model = FraudDetector()
@@ -261,25 +265,26 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 # Add middleware for performance and security
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Add GZip compression for responses
-app.add_middleware(GZipMiddleware, minimum_size=1000)  # Only compress responses > 1KB
+if settings.ENABLE_COMPRESSION:
+    app.add_middleware(GZipMiddleware, minimum_size=1000)  # Only compress responses > 1KB
 
 # Add security middleware
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"],  # In production, replace with your domain
+    allowed_hosts=settings.ALLOWED_HOSTS,
 )
 
 # Add response caching headers
 @app.middleware("http")
-as def add_cache_headers(request, call_next):
-    response = call_next(request)
+async def add_cache_headers(request, call_next):
+    response = await call_next(request)
     if request.method == "GET" and "static" in request.url.path:
         response.headers["Cache-Control"] = "public, max-age=31536000"  # 1 year cache for static files
     return response
