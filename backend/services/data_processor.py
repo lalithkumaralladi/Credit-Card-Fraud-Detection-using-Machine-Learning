@@ -14,10 +14,17 @@ from sklearn.preprocessing import StandardScaler, RobustScaler
 from imblearn.over_sampling import SMOTE
 import joblib
 from functools import lru_cache
-import pyarrow.parquet as pq
-import pyarrow as pa
 from pathlib import Path
 import time
+
+# Optional pyarrow support for performance
+try:
+    import pyarrow.parquet as pq
+    import pyarrow as pa
+    PYARROW_AVAILABLE = True
+except ImportError:
+    PYARROW_AVAILABLE = False
+    print("Warning: PyArrow not available. Parquet caching disabled.")
 
 class DataProcessor:
     """
@@ -71,17 +78,22 @@ class DataProcessor:
             # Get file modification time for cache invalidation
             file_mtime = os.path.getmtime(filepath)
             
-            # Check if we have a cached parquet version that's up to date
+            # Check if we have a cached parquet version that's up to date (only if pyarrow available)
             parquet_path = f"{filepath}.parquet"
-            if os.path.exists(parquet_path) and os.path.getmtime(parquet_path) > file_mtime:
+            if PYARROW_AVAILABLE and os.path.exists(parquet_path) and os.path.getmtime(parquet_path) > file_mtime:
                 # Load from parquet if it's newer than the source file
                 df = self._optimize_dataframe(pd.read_parquet(parquet_path))
                 
-            # Otherwise load from CSV and cache as parquet
+            # Otherwise load from CSV and optionally cache as parquet
             else:
                 df = self._load_csv_cached(filepath, file_mtime)
                 df = self._optimize_dataframe(df)
-                df.to_parquet(parquet_path, compression='snappy')
+                # Save as parquet for faster subsequent loads (if pyarrow available)
+                if PYARROW_AVAILABLE:
+                    try:
+                        df.to_parquet(parquet_path, compression='snappy')
+                    except Exception as e:
+                        print(f"Warning: Could not cache to parquet: {e}")
             
             # Basic validation - make Class optional for prediction-only files
             required_columns = ['Time', 'Amount']
