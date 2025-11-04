@@ -1,0 +1,113 @@
+================================================================================
+RENDER ENVIRONMENT VARIABLES - COPY AND PASTE THESE
+================================================================================
+
+Copy these into Render's Environment Variables section (Dashboard → Your Service → Environment)
+
+--------------------------------------------------------------------------------
+REQUIRED (Minimum Setup)
+--------------------------------------------------------------------------------
+
+APP_ENV=production
+DEBUG=False
+WORKERS=2
+LOG_LEVEL=info
+
+--------------------------------------------------------------------------------
+RECOMMENDED (Better Performance & Security)
+--------------------------------------------------------------------------------
+
+APP_ENV=production
+DEBUG=False
+HOST=0.0.0.0
+PORT=8000
+WORKERS=2
+LOG_LEVEL=info
+MAX_FILE_SIZE_MB=500
+ALLOWED_HOSTS=*
+CORS_ORIGINS=*
+ENABLE_COMPRESSION=True
+CACHE_STATIC_FILES=True
+TIMEOUT_KEEP_ALIVE=30
+LIMIT_CONCURRENCY=1000
+LIMIT_MAX_REQUESTS=10000
+
+NOTE: For SECRET_KEY, click "Generate" in Render to auto-generate a secure value
+
+--------------------------------------------------------------------------------
+FULL CONFIGURATION (All Options)
+--------------------------------------------------------------------------------
+
+# Application Settings
+APP_ENV=production
+DEBUG=False
+
+# Server Configuration
+HOST=0.0.0.0
+PORT=8000
+WORKERS=2
+
+# File Upload Settings
+MAX_FILE_SIZE_MB=500
+
+# Security Settings
+ALLOWED_HOSTS=*
+CORS_ORIGINS=*
+SECRET_KEY=[Let Render auto-generate this]
+
+# Logging
+LOG_LEVEL=info
+ACCESS_LOG=True
+
+# Performance Settings
+ENABLE_COMPRESSION=True
+CACHE_STATIC_FILES=True
+TIMEOUT_KEEP_ALIVE=30
+LIMIT_CONCURRENCY=1000
+LIMIT_MAX_REQUESTS=10000
+
+# Feature Flags
+ENABLE_SMOTE=True
+MAX_SMOTE_SAMPLES=100000
+SAMPLE_LARGE_DATASETS=True
+LARGE_DATASET_THRESHOLD=50000
+
+================================================================================
+HOW TO ADD THESE IN RENDER
+================================================================================
+
+1. Go to Render Dashboard
+2. Click on your deployed web service
+3. Click "Environment" in the left sidebar
+4. For EACH variable above:
+   - Click "Add Environment Variable"
+   - Copy the KEY (e.g., "APP_ENV")
+   - Copy the VALUE (e.g., "production")
+   - Click "Save Changes"
+
+5. After adding all variables, Render will automatically restart your app
+
+================================================================================
+IMPORTANT NOTES
+================================================================================
+
+✅ For FREE tier: Use WORKERS=1 or WORKERS=2 (to avoid out of memory)
+✅ For STARTER tier or higher: Can use WORKERS=4
+✅ ALLOWED_HOSTS: Change "*" to your domain in production for better security
+✅ CORS_ORIGINS: Change "*" to your frontend URL in production
+✅ SECRET_KEY: Use Render's "Generate" button - don't enter manually
+
+================================================================================
+QUICK START (ABSOLUTE MINIMUM)
+================================================================================
+
+If you want to deploy RIGHT NOW with minimum setup, just add these 4:
+
+APP_ENV=production
+DEBUG=False
+WORKERS=2
+LOG_LEVEL=info
+
+Everything else has defaults that will work!
+
+================================================================================
